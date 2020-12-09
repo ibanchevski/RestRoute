@@ -1,9 +1,8 @@
 # RestRoute
-Extremely minimal REST route parser and dispatcher.
+Minimal PHP RESTful routes parser and dispatcher.
 It helps building a simple RESTful routes with parameters
 defined in curly brackets.
-<br><br>
-
+<br>
 # Usage
 
 ```php
