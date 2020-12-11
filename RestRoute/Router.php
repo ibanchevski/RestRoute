@@ -10,7 +10,7 @@ class Router {
     public function __construct()
     {
         // Initialize the groups of the routes
-        // based on the  http request type
+        // based on the http request type
         // Example:
         // GET:
         //   /api/users
@@ -26,10 +26,16 @@ class Router {
         // Convert route string to regex string
         $regex = $this->buildRegexOfUri($uri);
 
+        // Save the names of the route parameters (if any)
+        $routeParams = [];
+        if (preg_match_all('/\{(.*?)\}/', $uri, $matches)) {
+            $routeParams = $matches[1];
+        }
+
         // Create the route object to hold the data 
         // for the route (method,regex,handler)
         // and append it to the global routes array
-        $route = new Route($httpMethod, $regex, $handler);
+        $route = new Route($httpMethod, $regex, $handler, $routeParams);
         array_push($this->routes[$httpMethod], $route->get());
     }
 
@@ -83,14 +89,19 @@ class Router {
         foreach ($routesCategory as $route) {
             // Check which regex matches the route
             if (!preg_match($route['regex'], $uri, $matches)) {
-                echo "No match\n";
                 continue;
             }
 
             $handler = $route['handler'];
             $vars = array_slice($matches, 1);
+
+            // Build named params array by using the names defined in the route
+            $namedParams = [];
+            for ($i = 0; $i < count($route['routeParams']); $i++) {
+                $namedParams[$route['routeParams'][$i]] = $vars[$i];
+            }
         }
-        return [$handler, $vars];
+        return [$handler, $namedParams];
     }
 
 }
